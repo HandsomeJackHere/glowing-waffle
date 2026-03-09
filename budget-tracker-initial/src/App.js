@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import './App.css'
+import './index.css'
+import GlassNavbar from './components/GlassNavbar'
+import GlassCard from './components/GlassCard'
+import GlassButton from './components/GlassButton'
+import GlassModal from './components/GlassModal'
 
 const STORAGE_KEY = 'budget_entries_v1'
 
@@ -9,9 +13,8 @@ function uid() {
 
 export default function App() {
   const [items, setItems] = useState([])
-  const [desc, setDesc] = useState('')
-  const [amount, setAmount] = useState('')
-  const [type, setType] = useState('expense')
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState({ desc: '', amount: '', type: 'expense' })
 
   useEffect(() => {
     try {
@@ -27,87 +30,84 @@ export default function App() {
   }, [items])
 
   const addItem = (e) => {
-    e.preventDefault()
-    const value = parseFloat(amount)
-    if (!desc.trim() || Number.isNaN(value)) return
-    setItems([{ id: uid(), desc: desc.trim(), amount: value, type, createdAt: Date.now() }, ...items])
-    setDesc('')
-    setAmount('')
+    e && e.preventDefault()
+    const value = parseFloat(form.amount)
+    if (!form.desc.trim() || Number.isNaN(value)) return
+    setItems([{ id: uid(), desc: form.desc.trim(), amount: value, type: form.type, createdAt: Date.now() }, ...items])
+    setForm({ desc: '', amount: '', type: 'expense' })
+    setOpen(false)
   }
 
   const removeItem = (id) => setItems(items.filter(i => i.id !== id))
-
-  const clearAll = () => {
-    if (window.confirm('Clear all entries?')) setItems([])
-  }
 
   const income = useMemo(() => items.filter(i => i.type === 'income').reduce((s, i) => s + i.amount, 0), [items])
   const expense = useMemo(() => items.filter(i => i.type === 'expense').reduce((s, i) => s + i.amount, 0), [items])
   const balance = income - expense
 
   return (
-    <div className="app-bg">
-      <div className="container">
-        <header className="header">
-          <h1>buget palnner local</h1>
-          <p className="subtitle">Beautifully simple budgeting — stored locally</p>
-        </header>
+    <div className="p-6 min-h-screen">
+      <GlassNavbar />
 
-        <main className="grid">
-          <section className="card stats">
-            <div className="balance">
-              <div>
-                <div className="label">Balance</div>
-                <div className="value">₹{balance.toFixed(2)}</div>
-              </div>
-              <div className="mini">
-                <div className="inc">Income<br/><strong>₹{income.toFixed(2)}</strong></div>
-                <div className="exp">Expense<br/><strong>₹{expense.toFixed(2)}</strong></div>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1">
+          <GlassCard className="p-6">
+            <div className="text-sm text-white/70">Balance</div>
+            <div className="text-3xl font-bold mt-2">₹{balance.toFixed(2)}</div>
+            <div className="flex gap-4 mt-4">
+              <div className="text-sm text-white/70">Income</div>
+              <div className="text-sm font-semibold">₹{income.toFixed(2)}</div>
+              <div className="text-sm text-white/70">Expense</div>
+              <div className="text-sm font-semibold">₹{expense.toFixed(2)}</div>
             </div>
-            <div className="progress">
-              <div className="bar" style={{width: `${Math.min(100, Math.abs(balance) / (Math.max(1, income + expense)) * 100)}%`}}></div>
+            <div className="mt-6">
+              <GlassButton onClick={() => setOpen(true)}>Add Entry</GlassButton>
             </div>
-            <div className="actions">
-              <button className="btn ghost" onClick={() => { setItems([]); localStorage.removeItem(STORAGE_KEY) }}>Reset Storage</button>
-              <button className="btn" onClick={clearAll}>Clear Entries</button>
-            </div>
-          </section>
+          </GlassCard>
+        </div>
 
-          <section className="card form">
-            <form onSubmit={addItem} className="entry-form">
-              <input placeholder="Description" value={desc} onChange={e => setDesc(e.target.value)} />
-              <div className="row">
-                <input placeholder="Amount (₹)" value={amount} onChange={e => setAmount(e.target.value)} />
-                <select value={type} onChange={e => setType(e.target.value)}>
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
-                </select>
-              </div>
-              <div className="row right">
-                <button className="btn primary" type="submit">Add</button>
-              </div>
-            </form>
-            <div className="list">
-              {items.length === 0 && <div className="empty">No entries yet — add your first one.</div>}
+        <div className="md:col-span-2">
+          <GlassCard className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-lg font-semibold">Entries</div>
+            </div>
+            <div className="space-y-3 max-h-[60vh] overflow-auto">
+              {items.length === 0 && <div className="text-white/60">No entries yet.</div>}
               {items.map(item => (
-                <div key={item.id} className={`item ${item.type}`}>
+                <div key={item.id} className="flex justify-between items-center p-3 rounded-lg bg-white/2">
                   <div>
-                    <div className="i-desc">{item.desc}</div>
-                    <div className="i-date">{new Date(item.createdAt).toLocaleString()}</div>
+                    <div className="font-semibold">{item.desc}</div>
+                    <div className="text-xs text-white/60">{new Date(item.createdAt).toLocaleString()}</div>
                   </div>
-                  <div className="i-right">
-                    <div className="i-amount">{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</div>
-                    <button className="btn tiny" onClick={() => removeItem(item.id)}>✕</button>
+                  <div className="flex items-center gap-3">
+                    <div className={`font-bold ${item.type === 'expense' ? 'text-rose-300' : 'text-emerald-300'}`}>{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</div>
+                    <GlassButton variant="ghost" onClick={() => removeItem(item.id)}>Remove</GlassButton>
                   </div>
                 </div>
               ))}
             </div>
-          </section>
-        </main>
-
-        <footer className="footer">Data stored only in your browser's <strong>localStorage</strong>.</footer>
+          </GlassCard>
+        </div>
       </div>
+
+      <GlassModal isOpen={open} onClose={() => setOpen(false)}>
+        <form onSubmit={addItem} className="space-y-4">
+          <div>
+            <label className="text-sm text-white/70">Description</label>
+            <input className="mt-2 w-full p-2 rounded-lg bg-white/5" value={form.desc} onChange={e => setForm({...form, desc: e.target.value})} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <input className="p-2 rounded-lg bg-white/5" placeholder="Amount (₹)" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} />
+            <select className="p-2 rounded-lg bg-white/5" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-3">
+            <GlassButton variant="ghost" onClick={() => setOpen(false)} type="button">Cancel</GlassButton>
+            <GlassButton type="submit">Add</GlassButton>
+          </div>
+        </form>
+      </GlassModal>
     </div>
   )
 }

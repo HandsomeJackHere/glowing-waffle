@@ -1,13 +1,14 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
+html,body,#root{height:100%}
+body{@apply bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 font-sans}
+
+/* Glass utilities (composable with Tailwind classes) */
+.glass-base{@apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl}
+.glass-hover:hover{@apply hover:scale-[1.02] transition transform}
+.glass-glow{box-shadow:0 10px 30px rgba(2,6,23,0.6), 0 6px 18px rgba(124,92,255,0.08)}
+.floating{animation:float-slow 6s ease-in-out infinite}
+
+code{font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace}

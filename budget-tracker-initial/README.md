@@ -1,5 +1,20 @@
 # buget palnner local
 
+This project now uses Tailwind CSS and Framer Motion for a modern Glassmorphism UI.
+
+Quick start:
+
+```bash
+cd budget-tracker-initial
+npm install
+npm start
+```
+
+Notes:
+- Tailwind config: `tailwind.config.cjs`
+- PostCSS config: `postcss.config.cjs`
+- Components are under `src/components` (GlassCard, GlassNavbar, GlassModal, GlassButton)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
