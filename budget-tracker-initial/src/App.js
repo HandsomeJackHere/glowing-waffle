@@ -49,7 +49,7 @@ export default function App() {
     <div className="app-bg">
       <div className="container">
         <header className="header">
-          <h1>GlowBudget</h1>
+          <h1>buget palnner local</h1>
           <p className="subtitle">Beautifully simple budgeting — stored locally</p>
         </header>
 
@@ -58,11 +58,11 @@ export default function App() {
             <div className="balance">
               <div>
                 <div className="label">Balance</div>
-                <div className="value">${balance.toFixed(2)}</div>
+                <div className="value">₹{balance.toFixed(2)}</div>
               </div>
               <div className="mini">
-                <div className="inc">Income<br/><strong>${income.toFixed(2)}</strong></div>
-                <div className="exp">Expense<br/><strong>${expense.toFixed(2)}</strong></div>
+                <div className="inc">Income<br/><strong>₹{income.toFixed(2)}</strong></div>
+                <div className="exp">Expense<br/><strong>₹{expense.toFixed(2)}</strong></div>
               </div>
             </div>
             <div className="progress">
@@ -78,7 +78,7 @@ export default function App() {
             <form onSubmit={addItem} className="entry-form">
               <input placeholder="Description" value={desc} onChange={e => setDesc(e.target.value)} />
               <div className="row">
-                <input placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
+                <input placeholder="Amount (₹)" value={amount} onChange={e => setAmount(e.target.value)} />
                 <select value={type} onChange={e => setType(e.target.value)}>
                   <option value="expense">Expense</option>
                   <option value="income">Income</option>
@@ -97,7 +97,7 @@ export default function App() {
                     <div className="i-date">{new Date(item.createdAt).toLocaleString()}</div>
                   </div>
                   <div className="i-right">
-                    <div className="i-amount">{item.type === 'expense' ? '-' : '+'}${Math.abs(item.amount).toFixed(2)}</div>
+                    <div className="i-amount">{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</div>
                     <button className="btn tiny" onClick={() => removeItem(item.id)}>✕</button>
                   </div>
                 </div>
