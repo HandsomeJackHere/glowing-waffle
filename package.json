@@ -1,0 +1,17 @@
+{
+  "name": "glowing-waffle-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "budget-tracker-initial"
+  ],
+  "scripts": {
+    "start": "npm --workspace=budget-tracker-initial start",
+    "install:all": "npm install --workspaces",
+    "install:budget": "npm install --workspace=budget-tracker-initial",
+    "dev:budget": "npm --workspace=budget-tracker-initial run start"
+  },
+  "dependencies": {
+    "ajv": "^8.18.0"
+  }
+}
