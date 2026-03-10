@@ -2,13 +2,13 @@ import React from 'react'
 import clsx from 'clsx'
 
 export default function GlassButton({ children, variant = 'primary', className = '', ...props }) {
-  const base = 'px-4 py-2 rounded-lg font-semibold transition-transform duration-200 focus:outline-none'
+  const base = 'px-4 py-2 rounded-md font-semibold transition duration-150 focus:outline-none'
   const variants = {
-    primary: 'bg-white/10 border border-white/20 text-white hover:shadow-lg',
-    ghost: 'bg-transparent border border-white/10 text-white hover:bg-white/5'
+    primary: 'btn-primary',
+    ghost: 'btn-ghost'
   }
   return (
-    <button className={clsx(base, variants[variant], 'hover:scale-105', className)} {...props}>
+    <button className={clsx(base, variants[variant], className)} {...props}>
       {children}
     </button>
   )

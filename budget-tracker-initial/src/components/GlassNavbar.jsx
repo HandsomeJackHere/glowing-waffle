@@ -4,15 +4,17 @@ import GlassCard from './GlassCard'
 export default function GlassNavbar({ title = 'buget palnner local' }) {
   return (
     <div className="mb-6">
-      <GlassCard className="p-4 flex items-center justify-between">
-        <div>
-          <div className="text-lg font-bold">{title}</div>
-          <div className="text-sm text-white/70">Local, private, and beautiful</div>
+      <div className="navbar card p-4">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div>
+            <div className="text-lg font-bold">{title}</div>
+            <div className="text-sm text-slate-400">Local, private, and simple</div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-slate-400">Dark</div>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-sm text-white/60">Dark</div>
-        </div>
-      </GlassCard>
+      </div>
     </div>
   )
 }

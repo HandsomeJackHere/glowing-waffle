@@ -3,12 +3,23 @@
 @tailwind utilities;
 
 html,body,#root{height:100%}
-body{@apply bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 font-sans}
+/* Fallback explicit colors to ensure readable text even if Tailwind isn't processed */
+body{
+	background:#0b1117;
+	color:#c9d1d9;
+	font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
 
-/* Glass utilities (composable with Tailwind classes) */
-.glass-base{@apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl}
-.glass-hover:hover{@apply hover:scale-[1.02] transition transform}
-.glass-glow{box-shadow:0 10px 30px rgba(2,6,23,0.6), 0 6px 18px rgba(124,92,255,0.08)}
-.floating{animation:float-slow 6s ease-in-out infinite}
+/* GitHub-like dark theme helpers */
+.app-container{@apply max-w-6xl mx-auto p-6}
+.card{background:#0d1117; border:1px solid #30363d; border-radius:0.5rem; box-shadow:0 1px 3px rgba(2,6,23,0.6); color:inherit}
+.card-body{padding:1.5rem}
+.navbar{background:#01040a; border-bottom:1px solid #21262d; color:inherit}
+.btn-primary{background:#238636;color:#fff;padding:0.5rem 0.75rem;border-radius:0.375rem}
+.btn-ghost{background:transparent;border:1px solid #30363d;color:inherit}
+
+/* Inputs/buttons */
+input,select,textarea,button{color:inherit}
+input,select,textarea{background:#010409;border:1px solid #30363d}
 
 code{font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace}
