@@ -11,22 +11,30 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
 
+function loadItems() {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch (e) {
+    console.error('Error loading budget data from localStorage:', e)
+    return []
+  }
+}
+
 export default function App() {
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState(() => loadItems())
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({ desc: '', amount: '', type: 'expense' })
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setItems(JSON.parse(raw))
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
     } catch (e) {
-      console.error(e)
+      console.error('Error saving budget data to localStorage:', e)
     }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   }, [items])
 
   const addItem = (e) => {
