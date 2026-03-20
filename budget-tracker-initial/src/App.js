@@ -41,12 +41,13 @@ export default function App() {
     e && e.preventDefault()
     const value = parseFloat(form.amount)
     if (!form.desc.trim() || Number.isNaN(value)) return
-    setItems([{ id: uid(), desc: form.desc.trim(), amount: value, type: form.type, createdAt: Date.now() }, ...items])
+    setItems(prev => [{ id: uid(), desc: form.desc.trim(), amount: value, type: form.type, createdAt: Date.now() }, ...prev])
     setForm({ desc: '', amount: '', type: 'expense' })
     setOpen(false)
   }
 
-  const removeItem = (id) => setItems(items.filter(i => i.id !== id))
+  const removeItem = (id) => setItems(prev => prev.filter(i => i.id !== id))
+  const clearAll = () => setItems([])
 
   const income = useMemo(() => items.filter(i => i.type === 'income').reduce((s, i) => s + i.amount, 0), [items])
   const expense = useMemo(() => items.filter(i => i.type === 'expense').reduce((s, i) => s + i.amount, 0), [items])
@@ -77,18 +78,21 @@ export default function App() {
           <GlassCard className="p-4">
             <div className="flex justify-between items-center mb-4">
               <div className="text-lg font-semibold">Entries</div>
+              <GlassButton variant="ghost" onClick={clearAll} disabled={items.length === 0}>Clear All</GlassButton>
             </div>
             <div className="space-y-3 max-h-[60vh] overflow-auto">
-              {items.length === 0 && <div className="text-slate-400">No entries yet.</div>}
+              {items.length === 0 && <div className="text-slate-300">No entries yet.</div>}
               {items.map(item => (
-                <div key={item.id} className="flex justify-between items-center p-3 rounded-lg bg-[#010409]">
-                  <div>
-                    <div className="font-semibold">{item.desc}</div>
-                    <div className="text-xs text-slate-400">{new Date(item.createdAt).toLocaleString()}</div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className={`font-bold ${item.type === 'expense' ? 'text-rose-300' : 'text-emerald-300'}`}>{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</div>
-                    <GlassButton variant="ghost" onClick={() => removeItem(item.id)}>Remove</GlassButton>
+                <div key={item.id} className="mb-3 last:mb-0">
+                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-900 border border-slate-700 shadow-md hover:shadow-lg transition-shadow min-h-[80px]">
+                    <div>
+                      <div className="font-semibold text-slate-100">{item.desc}</div>
+                      <div className="text-xs text-slate-400">{new Date(item.createdAt).toLocaleString()}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`font-bold ${item.type === 'expense' ? 'text-rose-300' : 'text-emerald-300'}`}>{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</div>
+                      <GlassButton variant="ghost" onClick={() => removeItem(item.id)}>Delete</GlassButton>
+                    </div>
                   </div>
                 </div>
               ))}
