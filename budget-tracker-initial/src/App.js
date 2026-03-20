@@ -27,6 +27,7 @@ function loadItems() {
 export default function App() {
   const [items, setItems] = useState(() => loadItems())
   const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState({ desc: '', amount: '', type: 'expense' })
 
   useEffect(() => {
@@ -37,12 +38,34 @@ export default function App() {
     }
   }, [items])
 
+  const resetForm = () => {
+    setForm({ desc: '', amount: '', type: 'expense' })
+    setEditingId(null)
+  }
+
+  const openAddModal = () => {
+    resetForm()
+    setOpen(true)
+  }
+
+  const openEditModal = (item) => {
+    setForm({ desc: item.desc, amount: String(item.amount), type: item.type })
+    setEditingId(item.id)
+    setOpen(true)
+  }
+
   const addItem = (e) => {
     e && e.preventDefault()
     const value = parseFloat(form.amount)
     if (!form.desc.trim() || Number.isNaN(value)) return
-    setItems(prev => [{ id: uid(), desc: form.desc.trim(), amount: value, type: form.type, createdAt: Date.now() }, ...prev])
-    setForm({ desc: '', amount: '', type: 'expense' })
+
+    if (editingId) {
+      setItems(prev => prev.map(i => i.id === editingId ? { ...i, desc: form.desc.trim(), amount: value, type: form.type } : i))
+    } else {
+      setItems(prev => [{ id: uid(), desc: form.desc.trim(), amount: value, type: form.type, createdAt: Date.now() }, ...prev])
+    }
+
+    resetForm()
     setOpen(false)
   }
 
@@ -76,27 +99,41 @@ export default function App() {
 
         <div className="md:col-span-2">
           <GlassCard className="p-4">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-3">
               <div className="text-lg font-semibold">Entries</div>
               <GlassButton variant="ghost" onClick={clearAll} disabled={items.length === 0}>Clear All</GlassButton>
             </div>
-            <div className="space-y-3 max-h-[60vh] overflow-auto">
-              {items.length === 0 && <div className="text-slate-300">No entries yet.</div>}
-              {items.map(item => (
-                <div key={item.id} className="mb-3 last:mb-0">
-                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-900 border border-slate-700 shadow-md hover:shadow-lg transition-shadow min-h-[80px]">
-                    <div>
-                      <div className="font-semibold text-slate-100">{item.desc}</div>
-                      <div className="text-xs text-slate-400">{new Date(item.createdAt).toLocaleString()}</div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className={`font-bold ${item.type === 'expense' ? 'text-rose-300' : 'text-emerald-300'}`}>{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</div>
-                      <GlassButton variant="ghost" onClick={() => removeItem(item.id)}>Delete</GlassButton>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {items.length === 0 ? (
+              <div className="text-slate-300">No entries yet.</div>
+            ) : (
+              <div className="overflow-auto max-h-[60vh] rounded-xl border border-slate-700 bg-[#0b111a] shadow-lg">
+                <table className="w-full text-left text-sm table-fixed border-collapse">
+                  <thead className="bg-[#111827] sticky top-0">
+                    <tr>
+                      <th className="px-3 py-2 font-semibold text-slate-300">Description</th>
+                      <th className="px-3 py-2 font-semibold text-slate-300">Type</th>
+                      <th className="px-3 py-2 font-semibold text-slate-300">Amount</th>
+                      <th className="px-3 py-2 font-semibold text-slate-300">Created</th>
+                      <th className="px-3 py-2 font-semibold text-slate-300 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map(item => (
+                      <tr key={item.id} className="border-t border-slate-700 hover:bg-slate-800/40">
+                        <td className="px-3 py-2 text-slate-100">{item.desc}</td>
+                        <td className="px-3 py-2"><span className={`px-2 py-1 rounded-full text-xs font-medium ${item.type === 'expense' ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'}`}>{item.type}</span></td>
+                        <td className={`px-3 py-2 font-semibold ${item.type === 'expense' ? 'text-rose-300' : 'text-emerald-300'}`}>{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</td>
+                        <td className="px-3 py-2 text-xs text-slate-400">{new Date(item.createdAt).toLocaleString()}</td>
+                        <td className="px-3 py-2 text-right space-x-2">
+                          <GlassButton variant="ghost" onClick={() => openEditModal(item)}>Edit</GlassButton>
+                          <GlassButton variant="ghost" onClick={() => removeItem(item.id)}>Delete</GlassButton>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </GlassCard>
         </div>
       </div>
@@ -115,8 +152,8 @@ export default function App() {
             </select>
           </div>
           <div className="flex justify-end gap-3">
-            <GlassButton variant="ghost" onClick={() => setOpen(false)} type="button">Cancel</GlassButton>
-            <GlassButton type="submit">Add</GlassButton>
+            <GlassButton variant="ghost" onClick={() => { resetForm(); setOpen(false) }} type="button">Cancel</GlassButton>
+            <GlassButton type="submit">{editingId ? 'Save' : 'Add'}</GlassButton>
           </div>
         </form>
       </GlassModal>
