@@ -28,7 +28,7 @@ export default function App() {
   const [items, setItems] = useState(() => loadItems())
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
-  const [form, setForm] = useState({ desc: '', amount: '', type: 'expense' })
+  const [form, setForm] = useState({ desc: '', amount: '', type: 'income' })
 
   useEffect(() => {
     try {
@@ -39,7 +39,7 @@ export default function App() {
   }, [items])
 
   const resetForm = () => {
-    setForm({ desc: '', amount: '', type: 'expense' })
+    setForm({ desc: '', amount: '', type: 'income' })
     setEditingId(null)
   }
 
@@ -121,7 +121,9 @@ export default function App() {
                     {items.map(item => (
                       <tr key={item.id} className="border-t border-slate-700 hover:bg-slate-800/40">
                         <td className="px-3 py-2 text-slate-100">{item.desc}</td>
-                        <td className="px-3 py-2"><span className={`px-2 py-1 rounded-full text-xs font-medium ${item.type === 'expense' ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'}`}>{item.type}</span></td>
+                        <td className="px-3 py-2"><span className={`px-2 py-1 rounded-full text-xs font-medium ${item.type === 'expense' ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+                          {item.type === 'expense' ? '↓ Expense' : '↑ Income'}
+                        </span></td>
                         <td className={`px-3 py-2 font-semibold ${item.type === 'expense' ? 'text-rose-300' : 'text-emerald-300'}`}>{item.type === 'expense' ? '-₹' : '+₹'}{Math.abs(item.amount).toFixed(2)}</td>
                         <td className="px-3 py-2 text-xs text-slate-400">{new Date(item.createdAt).toLocaleString()}</td>
                         <td className="px-3 py-2 text-right space-x-2">
@@ -147,8 +149,8 @@ export default function App() {
           <div className="grid grid-cols-2 gap-3">
             <input className="p-2 rounded-md bg-[#010409] border border-[#30363d]" placeholder="Amount (₹)" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} />
             <select className="p-2 rounded-md bg-[#010409] border border-[#30363d]" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
-              <option value="expense">Expense</option>
-              <option value="income">Income</option>
+              <option value="expense">↓ Expense</option>
+              <option value="income">↑ Income</option>
             </select>
           </div>
           <div className="flex justify-end gap-3">
